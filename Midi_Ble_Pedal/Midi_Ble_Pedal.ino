@@ -19,7 +19,7 @@
 #include <BLEServer.h>
 #include <BLE2902.h>
 
-#define SERVICE_UUID        "03b80e5a-ede8-4b33-a751-6ce34ec4c700" // mac-> 03b80e5a-ede8-4b33-a751-6ce34ec4c700
+#define SERVICE_UUID        "03b80e5a-ede8-4b33-a751-6ce34ec4c700" // I took this code form my MAC
 #define CHARACTERISTIC_UUID "7772e5db-3868-4112-a1a9-f2669d106bf3"
 
 // Inputs GPIO D13, D12, D14, D27,  
@@ -29,7 +29,7 @@ BLECharacteristic *pCharacteristic;
 bool deviceConnected = false;
 
 int currentValue[5], lastValue[5], i;
-int midiCC[]= {16,17,18,19,20}; // assign CC midi to 16,17,18,19
+int midiCC[]= {16,17,18,19,20};        // assign CC midi to 16,17,18,19
 int pedalInputs[]={13,12,14,27,25};
 int pedalOutputs[]={15,2,4,5};
 
@@ -56,18 +56,21 @@ void setup() {
   Serial.begin(115200);
 
   //*************   ESP32 SETTINGS      *************
-  
+
+  // Switch inputs
   pinMode(13, INPUT_PULLUP);
   pinMode(12, INPUT_PULLUP);
   pinMode(14, INPUT_PULLUP);
   pinMode(27, INPUT_PULLUP);
-  pinMode(25, INPUT_PULLUP); // For tap tempo
+  // Switch tap tempo
+  pinMode(25, INPUT_PULLUP); 
+  // LEd status
   pinMode(15, OUTPUT);
   pinMode(2, OUTPUT);
   pinMode(4, OUTPUT);
   pinMode(5, OUTPUT);
- 
-  pinMode(18, OUTPUT);  // status
+  // Board status
+  pinMode(18, OUTPUT);  // blink if its waiting conection, on if it's connected
 
   // ************   BLUETOOTH SETTINGS  *************
   
@@ -108,7 +111,7 @@ void loop() {
       
       // Scan for a change
       for(i=0;i<=3;i++){
-        digitalWrite(pedalOutputs[i],digitalRead(pedalInputs[i]));  // on/off the switch led
+        digitalWrite(pedalOutputs[i],digitalRead(pedalInputs[i]));  // implemento to turn on/off each led switch after press/relase
         currentValue[i]=digitalRead(pedalInputs[i]);
         if(currentValue[i]!=lastValue[i]){
           if(currentValue[i]==HIGH){                    
@@ -133,13 +136,8 @@ void loop() {
           midiPacket[4] = 127;
           pCharacteristic->setValue(midiPacket, 5); // packet, length in bytes)
           pCharacteristic->notify();
-          delay(100);
-        }/* else {
-          midiPacket[3] = midiCC[4]; // cc channel
-          midiPacket[4] = 0;
-          pCharacteristic->setValue(midiPacket, 5); // packet, length in bytes)
-          pCharacteristic->notify();
-        }*/
+          delay(100);   // implemented to avoid to have several reading with only one press
+        }
         
   }  
    
