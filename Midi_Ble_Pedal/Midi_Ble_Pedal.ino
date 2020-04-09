@@ -5,7 +5,6 @@
 
     The idea is create an midi guitar pedal for several iOS apps
     
-    
     This is a BLE_MIDI Example by neilbags 
     https://github.com/neilbags/arduino-esp32-BLE-MIDI
     
@@ -136,7 +135,7 @@ void loop() {
           midiPacket[4] = 127;
           pCharacteristic->setValue(midiPacket, 5); // packet, length in bytes)
           pCharacteristic->notify();
-          delay(100);   // implemented to avoid to have several reading with only one press
+          delay(100);   // implemented to avoid to have several reading with only one press (multiple triggins)
         }
         
   }  
